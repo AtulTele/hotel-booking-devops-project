@@ -10,11 +10,11 @@
 const jwt = require('jsonwebtoken');
 const { errorResponse } = require('../configs/app.response');
 const User = require('../models/user.model');
+const readSecret = require('../utils/readSecret');
 
 // TODO: Middleware for detect authenticated logging user
 exports.isAuthenticatedUser = async (req, res, next) => {
   try {
-    // get access token form authorization headers
     const { authorization } = req.headers;
 
     if (!authorization) {
@@ -25,42 +25,42 @@ exports.isAuthenticatedUser = async (req, res, next) => {
       ));
     }
 
-    // split token from authorization header
     const token = authorization.split(' ')[1];
 
-    // verify token
-    jwt.verify(token, process.env.JWT_SECRET_KEY, async (err, dec) => {
-      if (err) {
-        return res.status(404).json(errorResponse(
-          11,
-          'JWT TOKEN INVALID',
-          'JWT token is expired/invalid. Please logout and login again'
-        ));
-      }
+    jwt.verify(
+      token,
+      readSecret('jwt_secret_key', 'JWT_SECRET_KEY'),
+      async (err, dec) => {
+        if (err) {
+          return res.status(404).json(errorResponse(
+            11,
+            'JWT TOKEN INVALID',
+            'JWT token is expired/invalid. Please logout and login again'
+          ));
+        }
 
-      // check if user exists
-      const user = await User.findById(dec.id);
+        const user = await User.findById(dec.id);
 
-      if (!user) {
-        return res.status(404).json(errorResponse(
-          4,
-          'UNKNOWN ACCESS',
-          'Authorization headers is missing/invalid'
-        ));
-      }
+        if (!user) {
+          return res.status(404).json(errorResponse(
+            4,
+            'UNKNOWN ACCESS',
+            'Authorization headers is missing/invalid'
+          ));
+        }
 
-      // check if user is logged in
-      if (user.status === 'login') {
-        req.user = user;
-        next();
-      } else {
-        return res.status(401).json(errorResponse(
-          1,
-          'FAILED',
-          'Unauthorized access. Please login to continue'
-        ));
+        if (user.status === 'login') {
+          req.user = user;
+          next();
+        } else {
+          return res.status(401).json(errorResponse(
+            1,
+            'FAILED',
+            'Unauthorized access. Please login to continue'
+          ));
+        }
       }
-    });
+    );
   } catch (error) {
     res.status(500).json(errorResponse(
       2,
@@ -73,7 +73,6 @@ exports.isAuthenticatedUser = async (req, res, next) => {
 // TODO: Middleware for login user JWT refresh-token validate
 exports.isRefreshTokenValid = async (req, res, next) => {
   try {
-    // get refresh token form authorization headers
     const { authorization } = req.headers;
 
     if (!authorization) {
@@ -84,42 +83,45 @@ exports.isRefreshTokenValid = async (req, res, next) => {
       ));
     }
 
-    // split token from authorization header
     const token = authorization.split(' ')[1];
 
-    // verify token
-    jwt.verify(token, process.env.JWT_REFRESH_TOKEN_SECRET_KEY, async (err, dec) => {
-      if (err) {
-        return res.status(404).json(errorResponse(
-          11,
-          'JWT TOKEN INVALID',
-          'JWT token is expired/invalid. Please logout and login again'
-        ));
-      }
+    jwt.verify(
+      token,
+      readSecret(
+        'jwt_refresh_token_secret_key',
+        'JWT_REFRESH_TOKEN_SECRET_KEY'
+      ),
+      async (err, dec) => {
+        if (err) {
+          return res.status(404).json(errorResponse(
+            11,
+            'JWT TOKEN INVALID',
+            'JWT token is expired/invalid. Please logout and login again'
+          ));
+        }
 
-      // check if user exists
-      const user = await User.findById(dec.id);
+        const user = await User.findById(dec.id);
 
-      if (!user) {
-        return res.status(404).json(errorResponse(
-          4,
-          'UNKNOWN ACCESS',
-          'Authorization headers is missing/invalid'
-        ));
-      }
+        if (!user) {
+          return res.status(404).json(errorResponse(
+            4,
+            'UNKNOWN ACCESS',
+            'Authorization headers is missing/invalid'
+          ));
+        }
 
-      // check if user is logged in
-      if (user.status === 'login') {
-        req.user = user;
-        next();
-      } else {
-        return res.status(401).json(errorResponse(
-          1,
-          'FAILED',
-          'Unauthorized access. Please login to continue'
-        ));
+        if (user.status === 'login') {
+          req.user = user;
+          next();
+        } else {
+          return res.status(401).json(errorResponse(
+            1,
+            'FAILED',
+            'Unauthorized access. Please login to continue'
+          ));
+        }
       }
-    });
+    );
   } catch (error) {
     res.status(500).json(errorResponse(
       2,
@@ -132,7 +134,6 @@ exports.isRefreshTokenValid = async (req, res, next) => {
 // TODO: Middleware for check user is admin
 exports.isAdmin = async (req, res, next) => {
   try {
-    // get user from requested user
     const { user } = req;
 
     if (!user) {
@@ -143,7 +144,6 @@ exports.isAdmin = async (req, res, next) => {
       ));
     }
 
-    // check user status is admin
     if (user.role === 'admin') {
       next();
     } else {
@@ -165,7 +165,6 @@ exports.isAdmin = async (req, res, next) => {
 // TODO: Middleware for check user is blocked
 exports.isBlocked = async (req, res, next) => {
   try {
-    // get user from requested user
     const { user } = req;
 
     if (!user) {
@@ -176,7 +175,6 @@ exports.isBlocked = async (req, res, next) => {
       ));
     }
 
-    // check user status is blocked
     if (user.role !== 'blocked') {
       next();
     } else {

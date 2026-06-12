@@ -12,6 +12,7 @@ const crypto = require('crypto');
 const validator = require('validator');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const readSecret = require('../utils/readSecret');
 
 const usersSchema = new mongoose.Schema({
   userName: {
@@ -104,16 +105,24 @@ usersSchema.pre('save', async function (next) {
 
 // JWT Access Token
 usersSchema.methods.getJWTToken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_SECRET_KEY, {
-    expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRES
-  });
+  return jwt.sign(
+    { id: this._id },
+    readSecret('jwt_secret_key', 'JWT_SECRET_KEY'),
+    {
+      expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRES
+    }
+  );
 };
 
 // JWT Refresh Token
 usersSchema.methods.getJWTRefreshToken = function () {
-  return jwt.sign({ id: this._id }, process.env.JWT_REFRESH_TOKEN_SECRET_KEY, {
-    expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRES
-  });
+  return jwt.sign(
+    { id: this._id },
+    readSecret('jwt_refresh_token_secret_key', 'JWT_REFRESH_TOKEN_SECRET_KEY'),
+    {
+      expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRES
+    }
+  );
 };
 
 // compare password
@@ -123,10 +132,8 @@ usersSchema.methods.comparePassword = async function (password) {
 
 // generating password reset token
 usersSchema.methods.getResetPasswordToken = function () {
-  // generating token
   const resetToken = crypto.randomBytes(20).toString('hex');
 
-  // hashing and adding resetPasswordToken to usersSchema
   this.resetPasswordToken = crypto
     .createHash('sha256')
     .update(resetToken)
@@ -138,10 +145,8 @@ usersSchema.methods.getResetPasswordToken = function () {
 
 // generating email verification token
 usersSchema.methods.getEmailVerificationToken = function () {
-  // generating token
   const verificationToken = crypto.randomBytes(20).toString('hex');
 
-  // hashing and adding emailVerificationToken to usersSchema
   this.emailVerificationToken = crypto
     .createHash('sha256')
     .update(verificationToken)
