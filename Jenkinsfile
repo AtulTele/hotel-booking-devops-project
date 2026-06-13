@@ -1,46 +1,68 @@
 pipeline {
-    agent any
+    agent {
+        kubernetes {
+            yaml """
+apiVersion: v1
+kind: Pod
+spec:
+  serviceAccountName: jenkins-deployer
+  containers:
+    - name: kaniko
+      image: gcr.io/kaniko-project/executor:debug
+      command:
+        - cat
+      tty: true
+      volumeMounts:
+        - name: docker-config
+          mountPath: /kaniko/.docker
+  volumes:
+    - name: docker-config
+      secret:
+        secretName: dockerhub-secret
+        items:
+          - key: .dockerconfigjson
+            path: config.json
+"""
+        }
+    }
+
+    environment {
+        BACKEND_IMAGE = "atultele/hotel-backend"
+        IMAGE_TAG = "${BUILD_NUMBER}"
+    }
 
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out code from GitHub...'
-            }
-        }
-
-        stage('Verify Tools') {
-            steps {
-                sh '''
-                git --version
-                kubectl version --client
-                trivy --version
-                '''
+                checkout scm
             }
         }
 
         stage('Trivy File Scan') {
             steps {
-                sh '''
-                trivy fs --severity HIGH,CRITICAL --exit-code 0 .
-                '''
+                sh 'trivy fs --severity HIGH,CRITICAL --exit-code 0 .'
             }
         }
 
-        stage('Kubernetes Access Test') {
+        stage('Build and Push Backend Image') {
             steps {
-                sh '''
-                kubectl get pods -n hotel-booking
-                kubectl get svc -n hotel-booking
-                kubectl get ingress -n hotel-booking
-                '''
+                container('kaniko') {
+                    sh '''
+                    /kaniko/executor \
+                      --context ${WORKSPACE}/backend \
+                      --dockerfile ${WORKSPACE}/backend/Dockerfile \
+                      --destination ${BACKEND_IMAGE}:${IMAGE_TAG} \
+                      --destination ${BACKEND_IMAGE}:latest
+                    '''
+                }
             }
         }
 
-        stage('Rolling Restart Backend') {
+        stage('Update Kubernetes Backend Image') {
             steps {
                 sh '''
-                kubectl rollout restart deployment backend -n hotel-booking
-                kubectl rollout status deployment backend -n hotel-booking
+                kubectl set image deployment/backend backend=${BACKEND_IMAGE}:${IMAGE_TAG} -n hotel-booking
+                kubectl rollout status deployment/backend -n hotel-booking
                 '''
             }
         }
@@ -59,11 +81,10 @@ pipeline {
 
     post {
         success {
-            echo 'CI/CD Pipeline completed successfully!'
+            echo "Backend CI/CD completed successfully"
         }
-
         failure {
-            echo 'CI/CD Pipeline failed. Check console output.'
+            echo "Backend CI/CD failed"
         }
     }
 }
