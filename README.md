@@ -1,82 +1,95 @@
-# 🏨 Hotel Room Booking System – DevOps Implementation
+# 🏨 Hotel Room Booking System – Production DevOps Implementation
 
 ![Docker](https://img.shields.io/badge/Docker-Containerized-blue?logo=docker)
 ![Kubernetes](https://img.shields.io/badge/Kubernetes-Orchestrated-blue?logo=kubernetes)
 ![Jenkins](https://img.shields.io/badge/Jenkins-CI%2FCD-red?logo=jenkins)
 ![Trivy](https://img.shields.io/badge/Trivy-Security-green)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Database-green?logo=mongodb)
+![Kaniko](https://img.shields.io/badge/Kaniko-Image%20Build-orange)
 ![Status](https://img.shields.io/badge/Project-Completed-success)
 
 ---
 
 # 📌 Project Overview
 
-This repository demonstrates a complete **DevOps implementation** of the Hotel Room Booking System application.
+This repository demonstrates a complete Production-Style DevOps implementation of a Hotel Room Booking Application.
 
 The original application was developed by **Samiur Rahman Mukul**.
 
-🔗 Original Repository:
+Original Repository:
 
 https://github.com/SamiurRahmanMukul/Hotel-Room-Booking-System
 
-My focus was not application development but transforming the project into a production-style DevOps deployment using Docker, Kubernetes, Jenkins, and modern DevOps practices.
+My contribution focuses on transforming the application into a cloud-native deployment using modern DevOps practices including Docker, Kubernetes, Jenkins, Kaniko, RBAC, Security Scanning, and CI/CD automation.
 
 ---
 
 # 👨‍💻 Credits
 
-### Original Application Developer
+## Original Application Developer
 
 **Samiur Rahman Mukul**
 
-Application source code, business logic, frontend, backend, and admin panel belong to the original developer.
+Responsible for:
 
-### DevOps Implementation
+* Frontend Development
+* Backend Development
+* Business Logic
+* Admin Panel
+* Database Design
+
+## DevOps Implementation
 
 **Atul Tele**
 
 Implemented:
 
-* Docker
-* Kubernetes
-* Jenkins
-* HPA
-* Ingress
-* Trivy
-* RBAC
-* CI/CD Pipeline
+* Docker Containerization
+* Kubernetes Deployment
+* Jenkins on Kubernetes
+* RBAC Configuration
+* Trivy Security Scanning
+* NGINX Ingress Controller
+* CI/CD Automation
+* Kaniko Image Build Pipeline
+* Docker Hub Integration
+* Rolling Deployment Strategy
+* Smoke Testing
 * Production Deployment Practices
 
 ---
 
-# 🏗️ Architecture Diagram
+# 🏗️ Architecture
 
 ```text
-                    ┌───────────────┐
-                    │     Users     │
-                    └───────┬───────┘
-                            │
-                            ▼
-                 ┌────────────────────┐
-                 │   NGINX Ingress    │
-                 └─────────┬──────────┘
-                           │
-       ┌───────────────────┼───────────────────┐
-       ▼                   ▼                   ▼
-
-┌────────────┐    ┌────────────┐    ┌────────────┐
-│ Frontend   │    │ Admin App  │    │ Backend    │
-│ Deployment │    │ Deployment │    │ Deployment │
-└─────┬──────┘    └─────┬──────┘    └─────┬──────┘
-      │                 │                 │
-      └─────────────────┼─────────────────┘
-                        │
-                        ▼
-
-              ┌─────────────────┐
-              │    MongoDB      │
-              │       PVC       │
-              └─────────────────┘
+Developer
+    │
+    ▼
+ GitHub Repository
+    │
+    ▼
+ Jenkins Pipeline
+    │
+    ├────────────► Trivy Security Scan
+    │
+    ├────────────► Kaniko Image Build
+    │
+    ├────────────► Docker Hub Push
+    │
+    ▼
+ Kubernetes Cluster
+    │
+    ├────────► Frontend Deployment
+    ├────────► Backend Deployment
+    ├────────► Admin Deployment
+    └────────► MongoDB Deployment
+    │
+    ▼
+ NGINX Ingress
+    │
+    ├────────► hotel.local
+    ├────────► admin.hotel.local
+    └────────► api.hotel.local
 ```
 
 ---
@@ -89,196 +102,215 @@ GitHub
    ▼
  Jenkins
    │
-   ├── Build
+   ├── Checkout Source Code
    │
-   ├── Trivy Scan
+   ├── Verify Tools
    │
-   ├── Docker Build
+   ├── Trivy Security Scan
    │
-   ├── Push to DockerHub
+   ├── Create Kaniko Build Job
    │
-   └── Kubernetes Deploy
+   ├── Build Docker Image
+   │
+   ├── Push Image to Docker Hub
+   │
+   ├── Update Kubernetes Deployment
+   │
+   ├── Rolling Update
+   │
+   └── Smoke Test
             │
             ▼
-      Hotel Cluster
+      Production Cluster
 ```
 
 ---
 
 # 🐳 Docker Implementation
 
-### Completed
+Implemented:
 
-✅ Multi-stage Dockerfiles
-
-✅ Docker Compose
-
-✅ Environment Variables
-
-✅ Health Checks
-
-✅ Container Networking
-
-✅ Persistent Storage
+* Multi-Stage Dockerfiles
+* Docker Compose
+* Container Networking
+* Environment Variables
+* Health Checks
+* Persistent Storage
+* Docker Hub Image Registry
 
 ---
 
 # ☸️ Kubernetes Implementation
 
-### Cluster Setup
+## Cluster Setup
 
-* Kind Cluster
-* 1 Control Plane
+* Kind Kubernetes Cluster
+* 1 Control Plane Node
 * 2 Worker Nodes
 
-### Workloads
+## Kubernetes Resources
 
-✅ Namespace
-
-✅ Deployments
-
-✅ Services
-
-✅ ConfigMaps
-
-✅ Secrets
-
-✅ Persistent Volume Claims
-
-✅ MongoDB Storage
-
-✅ Ingress NGINX
+* Namespace
+* Deployments
+* Services
+* ConfigMaps
+* Secrets
+* Persistent Volume Claims
+* MongoDB Storage
+* RBAC
+* Service Accounts
+* NGINX Ingress
 
 ---
 
 # 🚀 Production Features
 
-### Resource Management
+## Resource Management
 
-✅ CPU Requests
+* CPU Requests
+* Memory Requests
+* CPU Limits
+* Memory Limits
 
-✅ Memory Requests
+## Health Monitoring
 
-✅ CPU Limits
+* Liveness Probes
+* Readiness Probes
 
-✅ Memory Limits
+## Deployment Strategy
 
-### Health Checks
-
-✅ Liveness Probe
-
-✅ Readiness Probe
-
-### Deployment Strategy
-
-✅ Rolling Updates
-
-✅ Rollback Support
+* Rolling Updates
+* Zero-Downtime Deployments
+* Rollback Support
 
 ---
 
-# 📈 Autoscaling
+# 🔐 Security Implementation
 
-### Horizontal Pod Autoscaler (HPA)
-
-```text
-Min Replicas : 2
-Max Replicas : 5
-CPU Target   : 50%
-```
-
-Implemented using:
-
-* Metrics Server
-* Kubernetes HPA
-
----
-
-# 🔐 Security
-
-### Trivy Security Scanning
+## Trivy Security Scanning
 
 Implemented vulnerability scanning for:
 
 * Docker Images
-* OS Packages
 * Application Dependencies
+* OS Packages
 
-### Kubernetes Security
+## Kubernetes Security
 
-✅ Secrets
-
-✅ RBAC
-
-✅ Service Accounts
-
-✅ Registry Authentication
+* RBAC
+* Service Accounts
+* Secrets Management
+* Registry Authentication
 
 ---
 
-# 🔄 Jenkins on Kubernetes
+# 🤖 Jenkins CI/CD Pipeline
 
-### Jenkins Features
+Jenkins is deployed inside Kubernetes and performs automated deployment.
 
-✅ Persistent Storage
+### Pipeline Stages
 
-✅ Docker Support
+✅ Checkout Source Code
 
-✅ kubectl Support
+✅ Verify Tools
 
-✅ Git Support
+✅ Trivy File System Scan
 
-✅ Trivy Support
+✅ Create Kaniko Build Job
 
-### Installed Tools
+✅ Build Docker Image
 
-```text
-Java 17
-Git
-Docker CLI
-kubectl
-Trivy
-```
+✅ Push Image to Docker Hub
+
+✅ Update Kubernetes Deployment
+
+✅ Rolling Restart
+
+✅ Smoke Testing
 
 ---
 
 # 📦 Technology Stack
 
-| Layer            | Technology      |
-| ---------------- | --------------- |
-| Frontend         | React / Next.js |
-| Backend          | Node.js         |
-| Database         | MongoDB         |
-| Containerization | Docker          |
-| Orchestration    | Kubernetes      |
-| CI/CD            | Jenkins         |
-| Security         | Trivy           |
-| Ingress          | NGINX           |
-| Autoscaling      | HPA             |
+| Layer            | Technology          |
+| ---------------- | ------------------- |
+| Frontend         | React               |
+| Backend          | Node.js             |
+| Database         | MongoDB             |
+| Containerization | Docker              |
+| Registry         | Docker Hub          |
+| Orchestration    | Kubernetes          |
+| CI/CD            | Jenkins             |
+| Image Build      | Kaniko              |
+| Security         | Trivy               |
+| Ingress          | NGINX               |
+| Networking       | Kubernetes Services |
 
 ---
 
-# 🎯 Future Enhancements
+# 🌐 Application URLs
+
+Frontend
+
+http://hotel.local
+
+Admin Panel
+
+http://admin.hotel.local
+
+Backend API
+
+http://api.hotel.local
+
+---
+
+# 📷 Project Screenshots
+
+## Jenkins Pipeline
+
+(Add Jenkins Screenshot Here)
+
+## Frontend Application
+
+(Add Frontend Screenshot Here)
+
+## Admin Dashboard
+
+(Add Admin Screenshot Here)
+
+## Kubernetes Pods
+
+(Add kubectl get pods Screenshot Here)
+
+---
+
+# 🎯 Learning Outcomes
+
+This project helped me gain hands-on experience with:
+
+* Docker Containerization
+* Kubernetes Administration
+* Jenkins CI/CD
+* Kubernetes RBAC
+* DevSecOps Practices
+* Security Scanning
+* Container Image Management
+* NGINX Ingress
+* Production Deployment Strategies
+* Automated Rolling Updates
+
+---
+
+# 🚀 Future Enhancements
 
 * Prometheus Monitoring
 * Grafana Dashboards
-* ArgoCD GitOps
 * Helm Charts
-* AWS EKS Deployment
+* ArgoCD GitOps
 * Terraform Infrastructure
-
----
-
-# 📚 Learning Objectives
-
-This project was created to practice:
-
-* Containerization
-* Kubernetes Administration
-* CI/CD Pipelines
-* Security Scanning
-* Production Deployment
-* Infrastructure Automation
+* AWS EKS Deployment
+* Automated Testing
+* Slack Notifications
 
 ---
 
@@ -290,4 +322,15 @@ Application development credit belongs entirely to:
 
 **Samiur Rahman Mukul**
 
-My contribution focuses on DevOps engineering, infrastructure automation, deployment, security, scalability, and CI/CD implementation.
+My contribution focuses on DevOps engineering, Kubernetes deployment, CI/CD automation, security scanning, infrastructure management, and production deployment practices.
+
+---
+
+# 👨‍💻 Author
+
+**Atul Tele**
+
+DevOps Engineer
+
+GitHub:
+https://github.com/AtulTele
